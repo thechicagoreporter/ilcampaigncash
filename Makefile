@@ -57,8 +57,6 @@ help:  ## Display this help
 ##@ Database views
 
 define create_view
-	(psql -c "\d public.$(subst db/views/,,$@)" > /dev/null 2>&1 && \
-		echo "view public.$(subst db/views/,,$@) exists") || \
 	psql -v ON_ERROR_STOP=1 -qX1ef sql/views/$(subst db/views,,$@).sql
 endef
 
