@@ -1,18 +1,30 @@
-CREATE TABLE IF NOT EXISTS public.officers (like raw.officers including all);
+CREATE TABLE IF NOT EXISTS public.officers (
+    id integer primary key,
+    last_name character varying,
+    first_name character varying,
+    address1 character varying,
+    address2 character varying,
+    city character varying,
+    state character varying,
+    zip character varying,
+    title character varying,
+    phone character varying,
+    redaction_requested boolean
+);
 
 LOCK TABLE public.officers IN EXCLUSIVE MODE;
 
 UPDATE public.officers
 SET
-    lastname = raw.officers.lastname,
-    firstname = raw.officers.firstname,
+    last_name = raw.officers.lastname,
+    first_name = raw.officers.firstname,
     address1 = raw.officers.address1,
     address2 = raw.officers.address2,
     state = raw.officers.state,
     zip = raw.officers.zip,
     title = raw.officers.title,
     phone = raw.officers.phone,
-    redactionrequested = raw.officers.redactionrequested
+    redaction_requested = raw.officers.redactionrequested
 FROM raw.officers
 WHERE raw.officers.id = public.officers.id;
 

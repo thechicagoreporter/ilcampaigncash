@@ -57,39 +57,47 @@ help:  ## Display this help
 ##@ Database views
 
 define create_view
-	psql -v ON_ERROR_STOP=1 -qX1ef sql/views/$(subst db/views,,$@).sql
+	@psql -v ON_ERROR_STOP=1 -qX1ef sql/views/$(subst db/views,,$@).sql
 endef
 
 .PHONY: db/views/%
 db/views/%: sql/views/%.sql load db/schemas/public ## Create view % specified in sql/views/%.sql (will load all data)
 	$(call create_view)
 
-.PHONY: db/views/Candidate_Elections
-db/views/Candidate_Elections: sql/views/Candidate_Elections.sql db/views/Candidates
+.phony: db/views/candidate_elections
+db/views/candidate_elections: sql/views/candidate_elections.sql db/views/candidates
 	$(call create_view)
 
-.PHONY: db/views/Committee_Candidate_Links
-db/views/Committee_Candidate_Links: db/views/Committees db/views/Candidates
+.phony: db/views/committee_candidate_links
+db/views/committee_candidate_links: db/views/committees db/views/candidates
 	$(call create_view)
 
-.PHONY: db/views/Receipts
-db/views/Receipts: db/views/Committees
+.phony: db/views/committee_officer_links
+db/views/committee_officer_links: db/views/committees db/views/officers
 	$(call create_view)
 
-.PHONY: db/views/Expenditures
-db/views/Expenditures: db/views/Committees
+.phony: db/views/previous_officers
+db/views/previous_officers: db/views/committees
 	$(call create_view)
 
-.PHONY: db/views/Condensed_Receipts
-db/views/Condensed_Receipts: db/views/Receipts db/views/Most_Recent_Filings
+.phony: db/views/receipts
+db/views/receipts: db/views/committees
 	$(call create_view)
 
-.PHONY: db/views/Condensed_Expenditures
-db/views/Condensed_Expenditures: db/views/Expenditures db/views/Most_Recent_Filings
+.phony: db/views/expenditures
+db/views/expenditures: db/views/committees
 	$(call create_view)
 
-.PHONY: db/views/Most_Recent_Filings
-db/views/Most_Recent_Filings: db/views/Committees db/views/Filed_Docs db/views/D2_Reports
+.phony: db/views/condensed_receipts
+db/views/condensed_receipts: db/views/receipts db/views/most_recent_filings
+	$(call create_view)
+
+.phony: db/views/condensed_expenditures
+db/views/condensed_expenditures: db/views/expenditures db/views/most_recent_filings
+	$(call create_view)
+
+.phony: db/views/most_recent_filings
+db/views/most_recent_filings: db/views/committees db/views/filed_docs db/views/d2_reports
 	$(call create_view)
 
 ##@ Database structure

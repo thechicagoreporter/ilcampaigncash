@@ -1,13 +1,3 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'committee_position') THEN
-      CREATE TYPE committee_position AS ENUM (
-          'support',
-          'oppose'
-      );
-    END IF;
-END$$;
-
 CREATE UNLOGGED TABLE IF NOT EXISTS raw.committees (
     id integer primary key,
     typeofcommittee character varying,
