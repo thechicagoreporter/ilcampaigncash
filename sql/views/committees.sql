@@ -1,34 +1,95 @@
-CREATE TABLE public.committees
-AS
-  SELECT
-    id as id,
-    typeofcommittee as type,
-    statecommittee as state_committee,
-    stateid as state_id,
-    localcommittee as local_committee,
-    localid as local_id,
-    refername as refer_name,
-    name as name,
-    address1 as address1,
-    address2 as address2,
-    address3 as address3,
-    city as city,
-    state as state,
-    zip as zipcode,
-    status as active,
-    statusdate as status_date,
-    creationdate as creation_date,
-    creationamount as creation_amount,
-    dispfundsreturn as disp_funds_return,
-    dispfundspolcomm as disp_funds_political_committee,
-    dispfundscharity as disp_funds_charity,
-    dispfunds95 as disp_funds_95,
-    dispfundsdescrip as disp_funds_description,
-    cansuppopp as committee_position,
-    policysuppopp as policy_position,
-    partyaffiliation as party,
-    purpose as purpose
-  FROM raw.committees
-;
+CREATE TABLE IF NOT EXISTS public.committees (
+    id integer primary key,
+    type character varying,
+    state_committee boolean,
+    state_id integer,
+    local_committee boolean,
+    local_id integer,
+    refer_name character varying,
+    name character varying,
+    address1 character varying,
+    address2 character varying,
+    address3 character varying,
+    city character varying,
+    state character varying,
+    zipcode character varying,
+    active character varying,
+    status_date timestamp without time zone,
+    creation_date timestamp without time zone,
+    creation_amount double precision,
+    disp_funds_return boolean,
+    disp_funds_political_committee boolean,
+    disp_funds_charity boolean,
+    disp_funds_95 boolean,
+    disp_funds_description text,
+    committee_position character varying,
+    policy_position character varying,
+    party_affiliation character varying,
+    purpose text
+);
 
-ALTER TABLE public.committees ADD PRIMARY KEY (id);
+LOCK TABLE public.committees IN EXCLUSIVE MODE;
+
+UPDATE public.committees
+SET
+    type = raw.committees.typeofcommittee,
+    state_committee = raw.committees.statecommittee,
+    state_id = raw.committees.stateid,
+    local_committee = raw.committees.localcommittee,
+    local_id = raw.committees.localid,
+    refer_name = raw.committees.refername,
+    name = raw.committees.name,
+    address1 = raw.committees.address1,
+    address2 = raw.committees.address2,
+    address3 = raw.committees.address3,
+    city = raw.committees.city,
+    state = raw.committees.state,
+    zipcode = raw.committees.zip,
+    active = raw.committees.status,
+    status_date = raw.committees.statusdate,
+    creation_date = raw.committees.creationdate,
+    creation_amount = raw.committees.creationamount,
+    disp_funds_return = raw.committees.dispfundsreturn,
+    disp_funds_political_committee = raw.committees.dispfundspolcomm,
+    disp_funds_charity = raw.committees.dispfundscharity,
+    disp_funds_95 = raw.committees.dispfunds95,
+    disp_funds_description = raw.committees.dispfundsdescrip,
+    committee_position = raw.committees.cansuppopp,
+    policy_position = raw.committees.policysuppopp,
+    party_affiliation = raw.committees.partyaffiliation,
+    purpose = raw.committees.purpose
+FROM raw.committees
+WHERE raw.committees.id = public.committees.id;
+
+INSERT INTO public.committees
+SELECT 
+    raw.committees.id,
+    raw.committees.typeofcommittee,
+    raw.committees.statecommittee,
+    raw.committees.stateid,
+    raw.committees.localcommittee,
+    raw.committees.localid,
+    raw.committees.refername,
+    raw.committees.name,
+    raw.committees.address1,
+    raw.committees.address2,
+    raw.committees.address3,
+    raw.committees.city,
+    raw.committees.state,
+    raw.committees.zip,
+    raw.committees.status,
+    raw.committees.statusdate,
+    raw.committees.creationdate,
+    raw.committees.creationamount,
+    raw.committees.dispfundsreturn,
+    raw.committees.dispfundspolcomm,
+    raw.committees.dispfundscharity,
+    raw.committees.dispfunds95,
+    raw.committees.dispfundsdescrip,
+    raw.committees.cansuppopp,
+    raw.committees.policysuppopp,
+    raw.committees.partyaffiliation,
+    raw.committees.purpose
+FROM raw.committees
+LEFT OUTER JOIN public.committees ON (public.committees.id = raw.committees.id)
+WHERE public.committees.id IS NULL;
